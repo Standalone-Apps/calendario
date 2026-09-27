@@ -29,7 +29,7 @@
   if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
 })();
 </script>
-<title>Calendario Task Pro 54</title>
+<title>Calendario Task Pro 55</title>
 <style>
 :root {
 --bg: #f5f7fb;
@@ -2575,7 +2575,7 @@ Controllare immagini"></textarea>
 <button type="button" data-mobile-action="menu">Menu</button>
 </nav>
 <script>
-const APP_VERSION = 54;
+const APP_VERSION = 55;
 const DB_NAME = "calendario_task_pro_db";
 const DB_VERSION = 1;
 const STORE_STATE = "state";
@@ -3991,7 +3991,7 @@ if (!group.length) return "";
 const color = cleanColor(categoryColor(category), "#4f46e5");
 const textColor = textColorForBackground(color);
 return `
-<div class="section-row category-group-row" draggable="${categoryDragEnabled}" data-category-group="${escapeHtml(category)}" data-category-area="${escapeHtml([...new Set(group.map(({ task }) => taskArea(task)))].length === 1 ? taskArea(group[0].task) : "")}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Apri elenco dei task della categoria ${escapeHtml(category)}" style="--category-accent:${escapeHtml(color)};--category-text:${escapeHtml(textColor)};" title="${categoryDragEnabled ? "Clicca per vedere i task · trascina dalla maniglia per spostare la categoria" : "Clicca per vedere tutti i task da fare della categoria"}">
+<div class="section-row category-group-row" draggable="${categoryDragEnabled}" data-category-group="${escapeHtml(category)}" data-category-area="${escapeHtml([...new Set(group.map(({ task }) => taskArea(task)))].length === 1 ? taskArea(group[0].task) : "")}" data-category-rows="${escapeHtml(encodeURIComponent(JSON.stringify(group.map(({ task, date }) => ({ id: task.id, date }))))) }" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Apri i ${group.length} task mostrati nella categoria ${escapeHtml(category)}" style="--category-accent:${escapeHtml(color)};--category-text:${escapeHtml(textColor)};" title="${categoryDragEnabled ? "Clicca per vedere questi task · trascina dalla maniglia per spostare la categoria" : "Clicca per vedere i task mostrati in questa categoria"}">
 <span>
 <span class="category-drag-handle" aria-hidden="true">⋮⋮</span>
 <span class="category-group-dot" aria-hidden="true"></span>
@@ -4057,23 +4057,44 @@ ${isRecurring(task) ? `<span class="badge">🔁 ${repeatLabel(task.repeat)}</spa
 </div>`;
 }
 
-function openCategoryContent(category, area = "") {
+function categoryRowsFromSnapshot(serializedRows, category, area = "") {
+const safeCategory = cleanText(category);
+const normalizedArea = AREA_VALUES.includes(area) ? area : "";
+if (!serializedRows) return categoryPendingOccurrences(safeCategory, normalizedArea);
+try {
+const refs = JSON.parse(decodeURIComponent(serializedRows));
+if (!Array.isArray(refs)) throw new Error("snapshot categoria non valido");
+return refs.map((ref) => {
+const item = safeObject(ref);
+const task = state.entries.find((entry) => entry.id === String(item.id || ""));
+const date = cleanText(item.date);
+if (!task || task.cat !== safeCategory || !validDate(date)) return null;
+if (normalizedArea && taskArea(task) !== normalizedArea) return null;
+return { task, date };
+}).filter(Boolean);
+} catch (error) {
+console.warn("Impossibile ricostruire il gruppo categoria: uso il fallback.", error);
+return categoryPendingOccurrences(safeCategory, normalizedArea);
+}
+}
+
+function openCategoryContent(category, area = "", serializedRows = "") {
 const safeCategory = cleanText(category);
 if (!safeCategory || !state.categories[safeCategory]) return;
 const normalizedArea = AREA_VALUES.includes(area) ? area : "";
-const rows = categoryPendingOccurrences(safeCategory, normalizedArea);
+const rows = categoryRowsFromSnapshot(serializedRows, safeCategory, normalizedArea);
 const color = cleanColor(categoryColor(safeCategory), "#4f46e5");
 const modal = $("modal-category-content");
 if (!modal) return;
 modal.style.setProperty("--category-popup-accent", color);
 $("category-content-name").textContent = safeCategory;
-const scope = normalizedArea ? ` in ${areaLabel(normalizedArea)}` : "";
+const scope = normalizedArea ? ` · ${areaLabel(normalizedArea)}` : "";
 $("category-content-summary").textContent = rows.length
-? `${rows.length} ${rows.length === 1 ? "attività da fare" : "attività da fare"}${scope}.`
-: `Nessuna attività da fare${scope}.`;
+? `${rows.length} ${rows.length === 1 ? "attività mostrata" : "attività mostrate"} in questa sezione${scope}.`
+: `Nessuna attività in questa sezione${scope}.`;
 $("category-content-list").innerHTML = rows.length
 ? rows.map(categoryContentItem).join("")
-: `<div class="category-content-empty"><strong>Tutto fatto ✓</strong><br>Non ci sono task aperti in questa categoria.</div>`;
+: `<div class="category-content-empty"><strong>Nessun task</strong><br>Questa sezione non contiene più attività.</div>`;
 openModal("modal-category-content");
 }
 
@@ -6035,13 +6056,13 @@ const categoryHeader = event.target.closest("[data-category-group]");
 if (!categoryHeader || event.target.closest(".category-drag-handle")) return;
 if (Date.now() < suppressCategoryPopupUntil) return;
 event.preventDefault();
-openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "");
+openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "", categoryHeader.dataset.categoryRows || "");
 });
 $("task-list").addEventListener("keydown", (event) => {
 const categoryHeader = event.target.closest("[data-category-group]");
 if (!categoryHeader || !["Enter", " "].includes(event.key)) return;
 event.preventDefault();
-openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "");
+openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "", categoryHeader.dataset.categoryRows || "");
 });
 $("modal-category-content").addEventListener("click", async (event) => {
 const editButton = event.target.closest("[data-category-edit-task]");
