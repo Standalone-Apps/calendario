@@ -29,7 +29,7 @@
   if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
 })();
 </script>
-<title>Calendario Task Pro 52</title>
+<title>Calendario Task Pro 53</title>
 <style>
 :root {
 --bg: #f5f7fb;
@@ -1941,6 +1941,131 @@ opacity: .82;
 }
 .category-group-row[draggable="false"] .category-drag-handle { display: none; }
 
+
+.category-group-row {
+cursor: pointer;
+}
+.category-group-row:focus-visible {
+outline: 3px solid color-mix(in srgb, var(--category-accent) 48%, #fff 24%);
+outline-offset: 2px;
+}
+.category-group-row::after {
+content: "Apri";
+margin-left: 6px;
+padding: 2px 7px;
+border-radius: 999px;
+background: rgba(255,255,255,.18);
+color: inherit;
+font-size: .62rem;
+font-weight: 950;
+letter-spacing: .02em;
+text-transform: none;
+opacity: .82;
+}
+.category-group-row:hover::after,
+.category-group-row:focus-visible::after {
+background: rgba(255,255,255,.28);
+opacity: 1;
+}
+.category-group-row[draggable="true"] .category-drag-handle {
+cursor: grab;
+}
+.category-content-modal {
+width: min(720px, 100%);
+}
+.category-content-head {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 12px;
+padding-bottom: 12px;
+border-bottom: 1px solid var(--border);
+}
+.category-content-title-wrap {
+min-width: 0;
+}
+.category-content-title {
+display: flex;
+align-items: center;
+gap: 9px;
+margin: 0;
+font-size: 1.18rem;
+letter-spacing: -.025em;
+}
+.category-content-dot {
+width: 12px;
+height: 12px;
+flex: 0 0 auto;
+border-radius: 999px;
+background: var(--category-popup-accent, var(--primary));
+box-shadow: 0 0 0 4px color-mix(in srgb, var(--category-popup-accent, var(--primary)) 14%, transparent);
+}
+.category-content-summary {
+margin: 5px 0 0;
+color: var(--muted);
+font-size: .82rem;
+}
+.category-content-list {
+display: grid;
+gap: 9px;
+margin-top: 14px;
+}
+.category-content-item {
+display: grid;
+grid-template-columns: 92px minmax(0, 1fr) auto;
+gap: 10px;
+align-items: center;
+padding: 11px;
+border: 1px solid var(--border);
+border-left: 4px solid var(--category-popup-accent, var(--primary));
+border-radius: var(--radius-md);
+background: var(--surface-soft);
+}
+.category-content-when {
+display: grid;
+gap: 2px;
+color: var(--muted);
+font-size: .74rem;
+font-weight: 850;
+}
+.category-content-when strong {
+color: var(--text);
+font-size: .82rem;
+}
+.category-content-main {
+min-width: 0;
+}
+.category-content-main strong {
+display: block;
+overflow-wrap: anywhere;
+}
+.category-content-meta {
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
+margin-top: 6px;
+}
+.category-content-empty {
+padding: 24px 14px;
+border: 1px dashed var(--border);
+border-radius: var(--radius-lg);
+background: var(--surface-soft);
+color: var(--muted);
+text-align: center;
+}
+@media (max-width: 620px) {
+.category-content-item {
+grid-template-columns: 1fr;
+}
+.category-content-item .btn {
+width: 100%;
+}
+.category-group-row::after {
+content: "↗";
+padding-inline: 6px;
+}
+}
+
 .task-subcategory-badge {
 color: var(--muted);
 background: var(--surface-soft);
@@ -2013,6 +2138,18 @@ border-color: var(--border);
 <button class="btn btn-ghost" type="button" data-close-modal="modal-confirm">Annulla</button>
 <button class="btn btn-danger" type="button" id="confirm-generic-action">Conferma</button>
 </div>
+</div>
+</div>
+<div id="modal-category-content" class="modal-backdrop" aria-hidden="true">
+<div class="modal category-content-modal" role="dialog" aria-modal="true" aria-labelledby="category-content-title" aria-describedby="category-content-summary">
+<div class="category-content-head">
+<div class="category-content-title-wrap">
+<h3 class="category-content-title" id="category-content-title"><span class="category-content-dot" aria-hidden="true"></span><span id="category-content-name">Categoria</span></h3>
+<p class="category-content-summary" id="category-content-summary"></p>
+</div>
+<button class="btn btn-ghost btn-icon" type="button" data-close-modal="modal-category-content" aria-label="Chiudi elenco categoria">×</button>
+</div>
+<div class="category-content-list" id="category-content-list"></div>
 </div>
 </div>
 <div id="modal-wizard" class="modal-backdrop" aria-hidden="true">
@@ -2424,7 +2561,7 @@ Controllare immagini"></textarea>
 <button type="button" data-mobile-action="menu">Menu</button>
 </nav>
 <script>
-const APP_VERSION = 52;
+const APP_VERSION = 53;
 const DB_NAME = "calendario_task_pro_db";
 const DB_VERSION = 1;
 const STORE_STATE = "state";
@@ -3840,7 +3977,7 @@ if (!group.length) return "";
 const color = cleanColor(categoryColor(category), "#4f46e5");
 const textColor = textColorForBackground(color);
 return `
-<div class="section-row category-group-row" draggable="${categoryDragEnabled}" data-category-group="${escapeHtml(category)}" style="--category-accent:${escapeHtml(color)};--category-text:${escapeHtml(textColor)};" title="${categoryDragEnabled ? "Trascina per spostare tutta la categoria con i suoi task" : "Seleziona ordine Manuale per spostare le categorie"}">
+<div class="section-row category-group-row" draggable="${categoryDragEnabled}" data-category-group="${escapeHtml(category)}" data-category-area="${escapeHtml([...new Set(group.map(({ task }) => taskArea(task)))].length === 1 ? taskArea(group[0].task) : "")}" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Apri elenco dei task della categoria ${escapeHtml(category)}" style="--category-accent:${escapeHtml(color)};--category-text:${escapeHtml(textColor)};" title="${categoryDragEnabled ? "Clicca per vedere i task · trascina dalla maniglia per spostare la categoria" : "Clicca per vedere tutti i task da fare della categoria"}">
 <span>
 <span class="category-drag-handle" aria-hidden="true">⋮⋮</span>
 <span class="category-group-dot" aria-hidden="true"></span>
@@ -3850,6 +3987,77 @@ return `
 </div>
 ${group.map(taskCard).join("")}`;
 }).join("");
+}
+
+
+function categoryPendingOccurrences(category, area = "") {
+const now = today();
+const seen = new Set();
+const rows = state.entries
+.filter((task) => task.status === "active")
+.filter((task) => task.cat === category)
+.filter((task) => !area || taskArea(task) === area)
+.filter((task) => taskHasPendingWork(task, now))
+.map((task) => {
+const date = isWaitingTask(task)
+? waitingDisplayDate(task, now)
+: isRecurring(task)
+? (nextPendingOccurrence(task, now) || task.date)
+: task.date;
+return { task, date };
+})
+.filter(({ task, date }) => validDate(date) && !completedOn(task, isWaitingTask(task) ? taskCompletionDate(task, now) : date))
+.filter(({ task, date }) => {
+const key = `${task.id}@${date}`;
+if (seen.has(key)) return false;
+seen.add(key);
+return true;
+});
+return sortOccurrences(rows);
+}
+
+function categoryContentItem({ task, date }) {
+const waiting = isWaitingTask(task);
+const editDate = waiting ? taskCompletionDate(task, today()) : date;
+const priorityClass = task.priority === "high" ? "badge-danger" : task.priority === "med" ? "badge-primary" : "badge-success";
+return `
+<div class="category-content-item" style="--category-popup-accent:${escapeHtml(cleanColor(categoryColor(task.cat), "#4f46e5"))};">
+<div class="category-content-when">
+<strong>${escapeHtml(task.time || "Senza orario")}</strong>
+<span>${escapeHtml(humanDate(date, { day: "2-digit", month: "short", year: "numeric" }))}</span>
+</div>
+<div class="category-content-main">
+<strong>${escapeHtml(task.text)}</strong>
+<div class="category-content-meta">
+<span class="area-pill ${taskArea(task) === "personal" ? "is-personal" : ""}">${areaIcon(taskArea(task))} ${escapeHtml(areaLabel(taskArea(task)))}</span>
+${task.sub ? `<span class="badge task-subcategory-badge">${escapeHtml(task.sub)}</span>` : ""}
+<span class="badge ${priorityClass}">${task.priority === "high" ? "🔴" : task.priority === "med" ? "🟡" : "🟢"} ${priorityLabel(task.priority)}</span>
+${waiting ? `<span class="badge badge-warning">⏳ ${WAITING_LABEL}</span>` : ""}
+${isRecurring(task) ? `<span class="badge">🔁 ${repeatLabel(task.repeat)}</span>` : ""}
+</div>
+</div>
+<button class="btn btn-soft" type="button" data-category-open-task="${escapeHtml(task.id)}" data-category-open-date="${escapeHtml(editDate)}">Apri</button>
+</div>`;
+}
+
+function openCategoryContent(category, area = "") {
+const safeCategory = cleanText(category);
+if (!safeCategory || !state.categories[safeCategory]) return;
+const normalizedArea = AREA_VALUES.includes(area) ? area : "";
+const rows = categoryPendingOccurrences(safeCategory, normalizedArea);
+const color = cleanColor(categoryColor(safeCategory), "#4f46e5");
+const modal = $("modal-category-content");
+if (!modal) return;
+modal.style.setProperty("--category-popup-accent", color);
+$("category-content-name").textContent = safeCategory;
+const scope = normalizedArea ? ` in ${areaLabel(normalizedArea)}` : "";
+$("category-content-summary").textContent = rows.length
+? `${rows.length} ${rows.length === 1 ? "attività da fare" : "attività da fare"}${scope}.`
+: `Nessuna attività da fare${scope}.`;
+$("category-content-list").innerHTML = rows.length
+? rows.map(categoryContentItem).join("")
+: `<div class="category-content-empty"><strong>Tutto fatto ✓</strong><br>Non ci sono task aperti in questa categoria.</div>`;
+openModal("modal-category-content");
 }
 
 function taskRowsWaiting(rows) {
@@ -5805,6 +6013,32 @@ quickAdd();
 }
 });
 $("quick-add-button").addEventListener("click", quickAdd);
+$("task-list").addEventListener("click", (event) => {
+const categoryHeader = event.target.closest("[data-category-group]");
+if (!categoryHeader || event.target.closest(".category-drag-handle")) return;
+if (Date.now() < suppressCategoryPopupUntil) return;
+event.preventDefault();
+openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "");
+});
+$("task-list").addEventListener("keydown", (event) => {
+const categoryHeader = event.target.closest("[data-category-group]");
+if (!categoryHeader || !["Enter", " "].includes(event.key)) return;
+event.preventDefault();
+openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "");
+});
+$("modal-category-content").addEventListener("click", async (event) => {
+const openButton = event.target.closest("[data-category-open-task]");
+if (!openButton) return;
+const taskId = openButton.dataset.categoryOpenTask;
+const task = state.entries.find((entry) => entry.id === taskId);
+if (!task) return showToast("Il task non è più disponibile.", true);
+const date = openButton.dataset.categoryOpenDate || task.date;
+closeModal("modal-category-content");
+selectDate(date);
+await persistState();
+await renderAll();
+await editTask(task.id, date);
+});
 $("task-list").addEventListener("click", async (event) => {
 const card = event.target.closest(".task-card");
 if (!card) return;
@@ -5833,6 +6067,7 @@ const task = state.entries.find((entry) => entry.id === card.dataset.taskId);
 if (task) await toggleSubtask(task, card.dataset.completionDate || card.dataset.date, event.target.dataset.subtaskId);
 });
 let draggedCategory = "";
+let suppressCategoryPopupUntil = 0;
 
 $("task-list").addEventListener("dragstart", (event) => {
 const categoryHeader = event.target.closest("[data-category-group]");
@@ -5869,6 +6104,7 @@ state.sort = "manual";
 
 $("task-list").addEventListener("dragend", (event) => {
 if (!event.target.closest("[data-category-group]")) return;
+suppressCategoryPopupUntil = Date.now() + 350;
 draggedCategory = "";
 document.querySelectorAll(".category-group-row").forEach((row) => row.classList.remove("is-category-dragging", "is-category-drop-target"));
 });
