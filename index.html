@@ -29,7 +29,7 @@
   if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
 })();
 </script>
-<title>Calendario Task Pro 53</title>
+<title>Calendario Task Pro 54</title>
 <style>
 :root {
 --bg: #f5f7fb;
@@ -2035,6 +2035,15 @@ font-size: .82rem;
 .category-content-main {
 min-width: 0;
 }
+.category-content-actions {
+display: flex;
+flex-wrap: wrap;
+justify-content: flex-end;
+gap: 6px;
+}
+.category-content-actions .btn {
+min-width: 92px;
+}
 .category-content-main strong {
 display: block;
 overflow-wrap: anywhere;
@@ -2059,6 +2068,11 @@ grid-template-columns: 1fr;
 }
 .category-content-item .btn {
 width: 100%;
+}
+.category-content-actions {
+width: 100%;
+display: grid;
+grid-template-columns: 1fr 1fr;
 }
 .category-group-row::after {
 content: "↗";
@@ -2561,7 +2575,7 @@ Controllare immagini"></textarea>
 <button type="button" data-mobile-action="menu">Menu</button>
 </nav>
 <script>
-const APP_VERSION = 53;
+const APP_VERSION = 54;
 const DB_NAME = "calendario_task_pro_db";
 const DB_VERSION = 1;
 const STORE_STATE = "state";
@@ -4036,7 +4050,10 @@ ${waiting ? `<span class="badge badge-warning">⏳ ${WAITING_LABEL}</span>` : ""
 ${isRecurring(task) ? `<span class="badge">🔁 ${repeatLabel(task.repeat)}</span>` : ""}
 </div>
 </div>
-<button class="btn btn-soft" type="button" data-category-open-task="${escapeHtml(task.id)}" data-category-open-date="${escapeHtml(editDate)}">Apri</button>
+<div class="category-content-actions">
+<button class="btn btn-soft" type="button" data-category-edit-task="${escapeHtml(task.id)}" data-category-task-date="${escapeHtml(editDate)}" aria-label="Modifica ${escapeHtml(task.text)}">✎ Modifica</button>
+<button class="btn btn-danger" type="button" data-category-delete-task="${escapeHtml(task.id)}" data-category-task-date="${escapeHtml(editDate)}" aria-label="Elimina ${escapeHtml(task.text)}">🗑 Elimina</button>
+</div>
 </div>`;
 }
 
@@ -6027,17 +6044,23 @@ event.preventDefault();
 openCategoryContent(categoryHeader.dataset.categoryGroup, categoryHeader.dataset.categoryArea || "");
 });
 $("modal-category-content").addEventListener("click", async (event) => {
-const openButton = event.target.closest("[data-category-open-task]");
-if (!openButton) return;
-const taskId = openButton.dataset.categoryOpenTask;
+const editButton = event.target.closest("[data-category-edit-task]");
+const deleteButton = event.target.closest("[data-category-delete-task]");
+const actionButton = editButton || deleteButton;
+if (!actionButton) return;
+const taskId = editButton ? editButton.dataset.categoryEditTask : deleteButton.dataset.categoryDeleteTask;
 const task = state.entries.find((entry) => entry.id === taskId);
 if (!task) return showToast("Il task non è più disponibile.", true);
-const date = openButton.dataset.categoryOpenDate || task.date;
+const date = actionButton.dataset.categoryTaskDate || task.date;
 closeModal("modal-category-content");
+if (editButton) {
 selectDate(date);
 await persistState();
 await renderAll();
 await editTask(task.id, date);
+return;
+}
+openDelete(task, date);
 });
 $("task-list").addEventListener("click", async (event) => {
 const card = event.target.closest(".task-card");
