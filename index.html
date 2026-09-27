@@ -5,7 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#4f46e5" />
 <meta name="description" content="Calendario task locale con aree Lavoro e Personale, controllo guidato, ricorrenze, sottotask, archivio, backup e ricerca." />
-<title>Calendario Task Pro 48</title>
+<script>
+/* Applica il tema salvato prima del primo paint, evitando il flash chiaro. */
+(() => {
+  const themeKey = "calendario_task_pro_theme";
+  const fallbackStateKey = "calendario_task_pro_fallback";
+  let theme = "";
+  try {
+    const storedTheme = localStorage.getItem(themeKey);
+    if (storedTheme === "dark" || storedTheme === "light") theme = storedTheme;
+    if (!theme) {
+      const rawState = localStorage.getItem(fallbackStateKey);
+      if (rawState) {
+        const savedState = JSON.parse(rawState);
+        if (savedState?.theme === "dark" || savedState?.theme === "light") theme = savedState.theme;
+      }
+    }
+  } catch (_) {}
+  if (!theme) theme = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
+})();
+</script>
+<title>Calendario Task Pro 52</title>
 <style>
 :root {
 --bg: #f5f7fb;
@@ -35,6 +59,7 @@
 --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 [data-theme="dark"] {
+color-scheme: dark;
 --bg: #020617;
 --surface: #0f172a;
 --surface-soft: #111827;
@@ -49,7 +74,7 @@
 --soft-shadow: 0 10px 28px rgba(0, 0, 0, .25);
 }
 * { box-sizing: border-box; }
-html { min-height: 100%; scroll-behavior: smooth; }
+html { min-height: 100%; scroll-behavior: smooth; background: var(--bg); color-scheme: light; }
 body {
 margin: 0;
 min-height: 100vh;
@@ -415,7 +440,7 @@ border-radius: 999px;
 background: var(--primary);
 }
 .day-btn.is-active.has-task::after { background: #fff; }
-.day-btn.has-task::after { display: none; }
+.day-btn.has-task:has(.day-task-count)::after { display: none; }
 .view-btn {
 width: 100%;
 border: 1px solid var(--border);
@@ -943,15 +968,15 @@ display: none;
 .task-more-menu { right: auto; left: 0; }
 .stats-strip { grid-template-columns: 1fr 1fr; }
 .field-grid-2, .field-grid-3, .field-grid-category { grid-template-columns: 1fr; }
-body { padding-bottom: 72px; }
+body { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 .mobile-quick-nav {
 position: fixed;
 left: 10px;
 right: 10px;
-bottom: 10px;
+bottom: max(10px, env(safe-area-inset-bottom));
 z-index: 180;
 display: grid;
-grid-template-columns: repeat(5, 1fr);
+grid-template-columns: repeat(5, minmax(0, 1fr));
 gap: 6px;
 padding: 8px;
 border: 1px solid var(--border);
@@ -961,6 +986,7 @@ box-shadow: var(--card-shadow);
 backdrop-filter: blur(10px);
 }
 .mobile-quick-nav button {
+min-width: 0;
 min-height: 42px;
 border: 1px solid var(--border);
 border-radius: 12px;
@@ -976,6 +1002,13 @@ font-weight: 950;
 .task-list-wrap,
 .stats-strip {
 box-shadow: 0 8px 24px rgba(15, 23, 42, .055);
+}
+[data-theme="dark"] .panel,
+[data-theme="dark"] .workspace-head,
+[data-theme="dark"] .quick-add,
+[data-theme="dark"] .task-list-wrap,
+[data-theme="dark"] .stats-strip {
+box-shadow: var(--soft-shadow);
 }
 .btn,
 .field,
@@ -1125,12 +1158,27 @@ margin-left: 0;
 margin-top: var(--gap);
 }
 }
+@media (min-width: 821px) and (max-width: 980px) {
+.workspace-head { grid-template-columns: 1fr; }
+.header-side { justify-items: stretch; }
+.header-actions { justify-content: flex-start; }
+.counter-card { width: 100%; }
+.guided-card { grid-template-columns: 1fr; gap: 14px; }
+.guided-card .guidance-actions { justify-content: flex-start; }
+.task-card { grid-template-columns: 76px minmax(0, 1fr); }
+.task-actions { grid-column: 2; justify-content: flex-start; min-width: 0; }
+.task-actions-main { justify-content: flex-start; }
+.stats-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 820px) {
 .workspace { grid-row: 1; }
 .nav-panel,
 .editor-panel {
 position: fixed;
-inset: 10px;
+top: max(10px, env(safe-area-inset-top));
+right: 10px;
+bottom: max(10px, env(safe-area-inset-bottom));
+left: 10px;
 z-index: 170;
 display: none;
 max-height: calc(100dvh - 20px);
@@ -1164,12 +1212,19 @@ align-items: stretch;
 .toolbar > .select,
 .toolbar > #move-all,
 .toolbar > .active-filters { grid-column: 1 / -1; }
+.toolbar > .spacer { display: none; }
 .task-actions-main > .btn-icon { flex: 1 1 44px; }
 .task-more { flex: 1 1 100%; }
 .task-more summary { width: 100%; min-height: 44px; }
 .task-more-menu { position: static; width: 100%; margin-top: 6px; }
 .stats-strip { grid-template-columns: 1fr 1fr; }
 .mobile-quick-nav button { min-height: 48px; font-size: .76rem; }
+}
+@media (max-width: 420px) {
+.mobile-quick-nav { left: 6px; right: 6px; gap: 4px; padding: 6px; }
+.mobile-quick-nav button { padding-inline: 3px; font-size: .68rem; }
+.stats-strip { gap: 8px; }
+.stat-box { padding: 10px 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
 html { scroll-behavior: auto; }
@@ -1893,7 +1948,7 @@ border-color: var(--border);
 }
 </style>
 </head>
-<body data-theme="light">
+<body>
 <div id="toast" role="status" aria-live="polite">
 <span id="toast-text"></span>
 <button id="toast-action" type="button" hidden></button>
@@ -2369,13 +2424,14 @@ Controllare immagini"></textarea>
 <button type="button" data-mobile-action="menu">Menu</button>
 </nav>
 <script>
-const APP_VERSION = 50;
+const APP_VERSION = 52;
 const DB_NAME = "calendario_task_pro_db";
 const DB_VERSION = 1;
 const STORE_STATE = "state";
 const STORE_IMAGES = "images";
 const STATE_KEY = "main";
 const FALLBACK_STATE_KEY = "calendario_task_pro_fallback";
+const THEME_STORAGE_KEY = "calendario_task_pro_theme";
 const FALLBACK_IMAGES_KEY = "calendario_task_pro_fallback_images";
 const MAX_IMPORT_BYTES = 50 * 1024 * 1024;
 const MAX_IMPORT_TASKS = 20000;
@@ -2400,7 +2456,7 @@ work: { label: "Lavoro", icon: "💼", color: "#2563eb" },
 personal: { label: "Personale", icon: "⌂", color: "#f97316" }
 };
 const AREA_VALUES = Object.keys(TASK_AREAS);
-const WORK_CATEGORY_PATTERN = /\b(lavoro|client|cliente|progetto|seo|copy|social|fattur|preventiv|sito|web|app|marketing|riunion|amministrazion|fornitor|azienda|business)\b/iu;
+const WORK_CATEGORY_PATTERN = /\b(?:lavoro|client(?:e|i)?|progett(?:o|i)|seo|copy(?:writer|writing)?|social|fattur\p{L}*|preventiv\p{L}*|sit(?:o|i)|web|app|marketing|riunion\p{L}*|amministrazion\p{L}*|fornitor\p{L}*|aziend\p{L}*|business)\b/iu;
 const DEFAULT_WIZARD_STATE = {
 mode: "guided",
 status: "idle",
@@ -2517,6 +2573,15 @@ return TASK_AREAS[normalizeArea(area)]?.icon || "⌂";
 }
 function taskMatchesArea(task) {
 return state.areaFilter === "all" || taskArea(task) === state.areaFilter;
+}
+function normalizeCompletionArchive(raw) {
+const out = Object.create(null);
+Object.entries(safeObject(raw)).forEach(([key, value]) => {
+if (!/^\d{4}$/.test(key)) return;
+const count = Number(value);
+if (Number.isFinite(count) && count > 0) out[key] = Math.floor(count);
+});
+return out;
 }
 function normalizeWizardState(raw) {
 const item = safeObject(raw);
@@ -2985,6 +3050,11 @@ if (typeof subtask === "string") return { id: uid(), text: cleanText(subtask) };
 const safeSubtask = safeObject(subtask);
 return { id: String(safeSubtask.id || uid()), text: cleanText(safeSubtask.text) };
 }).filter((subtask) => subtask.text);
+const usedSubtaskIds = new Set();
+subtasks.forEach((subtask) => {
+while (!subtask.id || usedSubtaskIds.has(subtask.id)) subtask.id = uid();
+usedSubtaskIds.add(subtask.id);
+});
 let subtaskDone = safeObject(item.subtaskDone);
 if (!Object.keys(subtaskDone).length) {
 const oldDone = safeArray(item.subtasks)
@@ -3115,7 +3185,7 @@ theme: data.theme === "dark" ? "dark" : "light",
 navWidth: clampNumber(data.navWidth || data.sideWidth, 230, 560, 292),
 editorWidth: clampNumber(data.editorWidth, 300, 680, 368),
 notificationsEnabled: !!data.notificationsEnabled,
-completionArchive: safeObject(data.completionArchive),
+completionArchive: normalizeCompletionArchive(data.completionArchive),
 wizard: normalizeWizardState(data.wizard || data.guidance),
 createdAt: validDate(data.createdAt) ? data.createdAt : today(),
 storageRevision: Math.max(0, Number(data.storageRevision) || 0),
@@ -3168,6 +3238,7 @@ console.warn("Salvataggio IndexedDB non riuscito: provo il salvataggio locale di
 }
 }
 localSaved = setLocalText(FALLBACK_STATE_KEY, JSON.stringify(snapshot));
+setLocalText(THEME_STORAGE_KEY, state.theme);
 return {
 persistent: indexedDbSaved || localSaved,
 indexedDbSaved,
@@ -3283,7 +3354,9 @@ return false;
 function nextOccurrence(task, from = today()) {
 if (task.status !== "active") return "";
 let day = from < task.date ? task.date : from;
-const limit = addDays(day, 3700);
+if (task.untilDate && day > task.untilDate) return "";
+const hardLimit = addDays(day, 3700);
+const limit = task.untilDate && task.untilDate < hardLimit ? task.untilDate : hardLimit;
 while (day <= limit) {
 if (scheduledOn(task, day)) return day;
 day = addDays(day, 1);
@@ -3293,7 +3366,9 @@ return "";
 function nextPendingOccurrence(task, from = today()) {
 if (task.status !== "active") return "";
 let day = from < task.date ? task.date : from;
-const limit = addDays(day, 3700);
+if (task.untilDate && day > task.untilDate) return "";
+const hardLimit = addDays(day, 3700);
+const limit = task.untilDate && task.untilDate < hardLimit ? task.untilDate : hardLimit;
 while (day <= limit) {
 if (scheduledOn(task, day) && !completedOn(task, day)) return day;
 day = addDays(day, 1);
@@ -3304,7 +3379,9 @@ function occurrencesBetween(task, start, end, limit = 500) {
 const out = [];
 if (task.status !== "active") return out;
 let day = start < task.date ? task.date : start;
-while (day <= end && out.length < limit) {
+if (task.untilDate && day > task.untilDate) return out;
+const lastDay = task.untilDate && task.untilDate < end ? task.untilDate : end;
+while (day <= lastDay && out.length < limit) {
 if (scheduledOn(task, day)) out.push(day);
 day = addDays(day, 1);
 }
@@ -3334,7 +3411,6 @@ const next = cleanDate(targetDate, addDays(sourceDate, 1));
 if (next === sourceDate) throw new Error("La nuova data deve essere diversa da quella attuale.");
 const sourceDone = completedOn(task, sourceDate);
 const sourceSubtaskDone = safeArray(task.subtaskDone?.[sourceDate]);
-const sourceSnooze = task.snoozed?.[sourceDate];
 if (isRecurring(task)) {
 task.excludedDates = [...new Set([...safeArray(task.excludedDates), sourceDate])];
 task.completedDates = safeArray(task.completedDates).filter((day) => day !== sourceDate);
@@ -3352,7 +3428,7 @@ untilDate: "",
 completedDates: sourceDone ? [next] : [],
 excludedDates: [],
 subtaskDone: sourceSubtaskDone.length ? { [next]: sourceSubtaskDone } : {},
-snoozed: sourceSnooze ? { [next]: sourceSnooze } : {},
+snoozed: {},
 status: "active",
 archivedAt: "",
 deletedAt: "",
@@ -3372,10 +3448,7 @@ task.subtaskDone[next] = safeArray(task.subtaskDone[sourceDate]);
 delete task.subtaskDone[sourceDate];
 }
 task.snoozed = safeObject(task.snoozed);
-if (task.snoozed[sourceDate]) {
-task.snoozed[next] = task.snoozed[sourceDate];
-delete task.snoozed[sourceDate];
-}
+if (task.snoozed[sourceDate]) delete task.snoozed[sourceDate];
 task.updatedAt = today();
 }
 return next;
@@ -3512,6 +3585,8 @@ await hydrateImages();
 function renderTheme() {
 state.navWidth = clampNumber(state.navWidth, 230, 560, 292);
 state.editorWidth = clampNumber(state.editorWidth, 300, 680, 368);
+document.documentElement.dataset.theme = state.theme;
+document.documentElement.style.colorScheme = state.theme;
 document.body.dataset.theme = state.theme;
 document.documentElement.style.setProperty("--nav-width", `${state.navWidth}px`);
 document.documentElement.style.setProperty("--editor-width", `${state.editorWidth}px`);
@@ -4571,7 +4646,16 @@ return false;
 return true;
 }
 function mapSubtasks(oldTask, texts) {
-return texts.map((text) => oldTask?.subtasks.find((subtask) => subtask.text === text) || { id: uid(), text });
+const reusableByText = new Map();
+safeArray(oldTask?.subtasks).forEach((subtask) => {
+const key = subtask.text;
+if (!reusableByText.has(key)) reusableByText.set(key, []);
+reusableByText.get(key).push(subtask);
+});
+return texts.map((text) => {
+const reusable = reusableByText.get(text)?.shift();
+return reusable ? { ...reusable, text } : { id: uid(), text };
+});
 }
 async function resolveImageId(existing = "") {
 if (imageRemoved) return "";
@@ -4679,7 +4763,7 @@ untilDate: "",
 completedDates: occurrenceDone ? [newDate] : [],
 excludedDates: [],
 subtaskDone: occurrenceSubtasks.length ? { [newDate]: occurrenceSubtasks } : {},
-snoozed: occurrenceSnooze ? { [newDate]: occurrenceSnooze } : {},
+snoozed: occurrenceSnooze && newDate === occurrence ? { [newDate]: occurrenceSnooze } : {},
 status: "active",
 archivedAt: "",
 deletedAt: "",
@@ -4695,15 +4779,21 @@ const futureExcluded = task.excludedDates.filter((date) => date >= occurrence);
 const futureSubtaskDone = Object.fromEntries(Object.entries(task.subtaskDone).filter(([date]) => date >= occurrence));
 const futureSnoozed = Object.fromEntries(Object.entries(safeObject(task.snoozed)).filter(([date]) => date >= occurrence));
 const nextSeriesDate = data.date || occurrence;
+const retainedFrom = nextSeriesDate > occurrence ? nextSeriesDate : occurrence;
+const retainedCompleted = futureCompleted.filter((date) => date >= retainedFrom);
+const retainedExcluded = futureExcluded.filter((date) => date >= retainedFrom);
+const retainedSubtaskDone = Object.fromEntries(Object.entries(futureSubtaskDone).filter(([date]) => date >= retainedFrom));
+const retainedSnoozed = Object.fromEntries(Object.entries(futureSnoozed).filter(([date]) => date >= retainedFrom));
 if (occurrence <= task.date) {
 Object.assign(task, updatedData, {
 date: nextSeriesDate,
 untilDate: data.untilDate || "",
-completedDates: futureCompleted.filter((date) => date >= nextSeriesDate),
-excludedDates: futureExcluded.filter((date) => date >= nextSeriesDate),
-subtaskDone: Object.fromEntries(Object.entries(futureSubtaskDone).filter(([date]) => date >= nextSeriesDate)),
-snoozed: Object.fromEntries(Object.entries(futureSnoozed).filter(([date]) => date >= nextSeriesDate))
+completedDates: retainedCompleted,
+excludedDates: retainedExcluded,
+subtaskDone: retainedSubtaskDone,
+snoozed: retainedSnoozed
 });
+if (previousImageId && previousImageId !== imageId) await cleanupImageIfUnused(previousImageId);
 } else {
 task.untilDate = addDays(occurrence, -1);
 task.completedDates = task.completedDates.filter((date) => date < occurrence);
@@ -4716,10 +4806,10 @@ state.entries.push({
 id: uid(),
 date: nextSeriesDate,
 untilDate: data.untilDate || "",
-completedDates: futureCompleted,
-excludedDates: futureExcluded,
-subtaskDone: futureSubtaskDone,
-snoozed: futureSnoozed,
+completedDates: retainedCompleted,
+excludedDates: retainedExcluded,
+subtaskDone: retainedSubtaskDone,
+snoozed: retainedSnoozed,
 originSeriesId: task.id,
 originalDate: occurrence,
 createdAt: today(),
@@ -4729,9 +4819,11 @@ order: Date.now()
 }
 }
 });
+const editedTaskId = task.id;
 pendingRecurringEdit = null;
 closeModal("modal-recurring");
 resetForm();
+await resumeWizardAfterManualSave(editedTaskId);
 }
 async function editTask(id, occurrenceDate) {
 const task = state.entries.find((entry) => entry.id === id);
@@ -4769,6 +4861,7 @@ if (blob) {
 const url = URL.createObjectURL(blob);
 $("image-preview").src = url;
 $("image-preview").onload = () => URL.revokeObjectURL(url);
+$("image-preview").onerror = () => URL.revokeObjectURL(url);
 $("image-preview-wrap").hidden = false;
 }
 } else {
@@ -4906,6 +4999,7 @@ copy.untilDate = "";
 copy.completedDates = [];
 copy.excludedDates = [];
 copy.subtaskDone = {};
+copy.snoozed = {};
 copy.status = "active";
 copy.archivedAt = "";
 copy.deletedAt = "";
@@ -5116,7 +5210,7 @@ csvDownloadFromEntries(rows, `calendario_task_vista_${today()}.csv`);
 showToast("Vista corrente esportata.");
 }
 function exportCsv() {
-const headers = ["ID", "Titolo", "Area principale", "Categoria", "Sottocategoria", "Data", "Ora", "Priorità", "Ricorrenza", "In attesa", "Stato", "Completamenti", "Note", "Link"];
+const headers = ["ID", "Titolo", "Area principale", "Categoria", "Sottocategoria", "Data", "Ora", "Durata", "Priorità", "Ricorrenza", "In attesa", "Stato", "Completamenti", "Note", "Link"];
 const rows = state.entries.map((task) => [
 task.id,
 task.text,
@@ -5125,6 +5219,7 @@ task.cat,
 task.sub,
 task.date,
 task.time,
+task.durationMinutes || "",
 task.priority,
 task.repeat,
 task.waiting ? "sì" : "no",
@@ -5178,11 +5273,11 @@ if (!pendingImport) return;
 const mode = document.querySelector('input[name="import-mode"]:checked')?.value || "merge";
 if (mode === "replace") await exportJson();
 await mutate("Backup importato", async () => {
-const imageIdMap = {};
+const imageIdMap = Object.create(null);
 for (const [imageId, dataUrl] of Object.entries(pendingImport.images)) {
 if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) continue;
 try {
-let targetId = imageId;
+let targetId = BLOCKED_OBJECT_KEYS.has(String(imageId).toLowerCase()) ? uid() : imageId;
 if (mode === "merge") {
 const isReferenced = state.entries.some((task) => task.imageId === imageId);
 const existingBlob = isReferenced ? true : await getImage(imageId);
@@ -5196,13 +5291,11 @@ console.warn("Immagine non importata", imageId, error);
 }
 if (mode === "replace") {
 state = normalizeState(pendingImport.state);
-Object.entries(imageIdMap).forEach(([oldId, newId]) => {
 state.entries.forEach((task) => {
-if (task.imageId === oldId) task.imageId = newId;
-});
+if (task.imageId) task.imageId = imageIdMap[task.imageId] || "";
 });
 } else {
-const categoryNameMap = {};
+const categoryNameMap = Object.create(null);
 Object.entries(pendingImport.state.categories).forEach(([name, value]) => {
 if (!isSafeCategoryName(name)) return;
 const existingName = Object.keys(state.categories).find((category) => category.localeCompare(name, "it", { sensitivity: "accent" }) === 0);
@@ -5220,7 +5313,7 @@ state.categories[existingName].subs.push(sub);
 }
 });
 const existingIds = new Set(state.entries.map((task) => task.id));
-const taskIdMap = {};
+const taskIdMap = Object.create(null);
 const importedTasks = pendingImport.state.entries.map((task) => {
 const importedTask = clone(task);
 const originalId = importedTask.id;
@@ -5228,9 +5321,7 @@ if (existingIds.has(importedTask.id)) importedTask.id = uid();
 existingIds.add(importedTask.id);
 taskIdMap[originalId] = importedTask.id;
 if (categoryNameMap[importedTask.cat]) importedTask.cat = categoryNameMap[importedTask.cat];
-if (importedTask.imageId && Object.prototype.hasOwnProperty.call(pendingImport.images, importedTask.imageId)) {
-importedTask.imageId = imageIdMap[importedTask.imageId] || "";
-}
+if (importedTask.imageId) importedTask.imageId = imageIdMap[importedTask.imageId] || "";
 return importedTask;
 });
 importedTasks.forEach((task) => {
@@ -5257,26 +5348,44 @@ const reminder = new Date(`${date}T${task.time}:00`);
 reminder.setMinutes(reminder.getMinutes() - (task.reminderMinutes || 0));
 return reminder;
 }
-function checkAlarms() {
-const now = new Date();
-state.entries.filter((task) => task.status === "active").forEach((task) => {
-[today(), addDays(today(), 1)].forEach((date) => {
-const occurrenceDate = isWaitingTask(task) && task.followUpDate ? task.followUpDate : date;
-const waitingCompletionDate = isRecurring(task) ? (nextPendingOccurrence(task, date) || task.date) : task.date;
-const shouldNotify = isWaitingTask(task) && task.followUpDate
-? task.followUpDate === date && !completedOn(task, waitingCompletionDate)
-: scheduledOn(task, date) && !completedOn(task, date);
-if (!shouldNotify) return;
-const snoozed = task.snoozed?.[occurrenceDate] ? new Date(task.snoozed[occurrenceDate]) : null;
-const when = snoozed || reminderTime(task, occurrenceDate);
-if (!when) return;
+function alarmCompletionDate(task, reminderDate, referenceDate = today()) {
+if (!isWaitingTask(task)) return reminderDate;
+if (isRecurring(task)) return nextPendingOccurrence(task, referenceDate) || task.date;
+return task.date;
+}
+function notifyIfDue(task, reminderDate, completionDate, when, now) {
+if (!(when instanceof Date) || Number.isNaN(when.getTime())) return;
 const delta = now - when;
-const key = `${task.id}@${date}@${when.toISOString()}`;
+const key = `${task.id}@${reminderDate}@${completionDate}@${when.toISOString()}`;
 if (delta >= 0 && delta < 5 * 60000 && !notified.has(key)) {
 notified.add(key);
-notifyTask(task, occurrenceDate);
+notifyTask(task, reminderDate, completionDate);
 setTimeout(() => notified.delete(key), 3600000);
 }
+}
+function checkAlarms() {
+const now = new Date();
+const currentDay = today();
+state.entries.filter((task) => task.status === "active").forEach((task) => {
+Object.entries(safeObject(task.snoozed)).forEach(([reminderDate, snoozeValue]) => {
+if (!validDate(reminderDate)) return;
+const completionDate = alarmCompletionDate(task, reminderDate, currentDay);
+const stillPending = isWaitingTask(task)
+? taskHasPendingWork(task, currentDay) && !completedOn(task, completionDate)
+: scheduledOn(task, reminderDate) && !completedOn(task, reminderDate);
+if (!stillPending) return;
+notifyIfDue(task, reminderDate, completionDate, new Date(snoozeValue), now);
+});
+[currentDay, addDays(currentDay, 1)].forEach((date) => {
+const reminderDate = isWaitingTask(task) && task.followUpDate ? task.followUpDate : date;
+const completionDate = alarmCompletionDate(task, reminderDate, date);
+const shouldNotify = isWaitingTask(task) && task.followUpDate
+? task.followUpDate === date && taskHasPendingWork(task, date) && !completedOn(task, completionDate)
+: scheduledOn(task, date) && !completedOn(task, date);
+if (!shouldNotify || task.snoozed?.[reminderDate]) return;
+const when = reminderTime(task, reminderDate);
+if (!when) return;
+notifyIfDue(task, reminderDate, completionDate, when, now);
 });
 });
 }
@@ -5305,41 +5414,38 @@ console.warn("Avviso sonoro non disponibile", error);
 }
 }
 
-function openAlarmPopup(task, date) {
-pendingAlarm = { taskId: task.id, date };
+function openAlarmPopup(task, reminderDate, completionDate = reminderDate) {
+pendingAlarm = { taskId: task.id, reminderDate, completionDate };
 $("alarm-message").textContent = `${task.text}${task.time ? ` · ore ${task.time}` : ""} · ${task.cat} · Priorità ${priorityLabel(task.priority)}`;
 openModal("modal-alarm");
 }
-
 async function completeAlarmTask() {
 if (!pendingAlarm) return;
-const { taskId, date } = pendingAlarm;
+const { taskId, completionDate } = pendingAlarm;
 const task = state.entries.find((entry) => entry.id === taskId);
 pendingAlarm = null;
 closeModal("modal-alarm");
-if (task && !completedOn(task, date)) await toggleComplete(task, date);
+if (task && !completedOn(task, completionDate)) await toggleComplete(task, completionDate);
 }
-
 async function snoozeAlarmTask() {
 if (!pendingAlarm) return;
-const { taskId, date } = pendingAlarm;
+const { taskId, reminderDate } = pendingAlarm;
 const task = state.entries.find((entry) => entry.id === taskId);
 pendingAlarm = null;
 closeModal("modal-alarm");
-if (task) await snoozeTask(task, date);
+if (task) await snoozeTask(task, reminderDate);
 }
-
 async function openAlarmTask() {
 if (!pendingAlarm) return;
-const { taskId, date } = pendingAlarm;
+const { taskId, completionDate } = pendingAlarm;
 const task = state.entries.find((entry) => entry.id === taskId);
 pendingAlarm = null;
 closeModal("modal-alarm");
 if (!task) return;
-selectDate(date);
+selectDate(completionDate);
 await persistState();
 await renderAll();
-await editTask(task.id, date);
+await editTask(task.id, completionDate);
 }
 
 function closeAlarmPopup() {
@@ -5347,18 +5453,18 @@ pendingAlarm = null;
 closeModal("modal-alarm");
 }
 
-function notifyTask(task, date) {
+function notifyTask(task, reminderDate, completionDate = reminderDate) {
 showToast(`🔔 ${task.text}${task.time ? ` · ${task.time}` : ""}`);
 playAlarmSound();
-openAlarmPopup(task, date);
+openAlarmPopup(task, reminderDate, completionDate);
 if ("Notification" in window && Notification.permission === "granted") {
 const notification = new Notification("Task in scadenza", {
 body: `${task.text} · ${task.cat}${task.time ? ` alle ${task.time}` : ""}`,
-tag: `${task.id}@${date}`
+tag: `${task.id}@${reminderDate}`
 });
 notification.onclick = async () => {
 window.focus();
-selectDate(date);
+selectDate(completionDate);
 await persistState();
 await renderAll();
 };
@@ -5571,6 +5677,7 @@ imageRemoved = false;
 const url = URL.createObjectURL(pendingImageBlob);
 $("image-preview").src = url;
 $("image-preview").onload = () => URL.revokeObjectURL(url);
+$("image-preview").onerror = () => URL.revokeObjectURL(url);
 $("image-preview-wrap").hidden = false;
 showToast("Immagine compressa e pronta.");
 } catch (error) {
@@ -5808,7 +5915,10 @@ if (event.target.closest("[data-category-group]")) return;
 draggedId = "";
 });
 $("toggle-theme").addEventListener("click", async () => {
-await mutate("Tema aggiornato", async () => { state.theme = state.theme === "dark" ? "light" : "dark"; }, false);
+await mutate("Tema aggiornato", async () => {
+state.theme = state.theme === "dark" ? "light" : "dark";
+setLocalText(THEME_STORAGE_KEY, state.theme);
+}, false);
 });
 $("enable-notifications").addEventListener("click", enableNotifications);
 $("alarm-complete").addEventListener("click", completeAlarmTask);
