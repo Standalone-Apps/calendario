@@ -8,25 +8,25 @@
 <script>
 /* Applica il tema salvato prima del primo paint, evitando il flash chiaro. */
 (() => {
-  const themeKey = "calendario_task_pro_theme";
-  const fallbackStateKey = "calendario_task_pro_fallback";
-  let theme = "";
-  try {
-    const storedTheme = localStorage.getItem(themeKey);
-    if (storedTheme === "dark" || storedTheme === "light") theme = storedTheme;
-    if (!theme) {
-      const rawState = localStorage.getItem(fallbackStateKey);
-      if (rawState) {
-        const savedState = JSON.parse(rawState);
-        if (savedState?.theme === "dark" || savedState?.theme === "light") theme = savedState.theme;
-      }
-    }
-  } catch (_) {}
-  if (!theme) theme = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme = theme;
-  const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
+const themeKey = "calendario_task_pro_theme";
+const fallbackStateKey = "calendario_task_pro_fallback";
+let theme = "";
+try {
+const storedTheme = localStorage.getItem(themeKey);
+if (storedTheme === "dark" || storedTheme === "light") theme = storedTheme;
+if (!theme) {
+const rawState = localStorage.getItem(fallbackStateKey);
+if (rawState) {
+const savedState = JSON.parse(rawState);
+if (savedState?.theme === "dark" || savedState?.theme === "light") theme = savedState.theme;
+}
+}
+} catch (_) {}
+if (!theme) theme = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
+document.documentElement.dataset.theme = theme;
+document.documentElement.style.colorScheme = theme;
+const metaTheme = document.querySelector('meta[name="theme-color"]');
+if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#020617" : "#4f46e5");
 })();
 </script>
 <title>Calendario Task Pro 55</title>
@@ -1919,7 +1919,6 @@ box-shadow:
 inset 0 1px 0 rgba(255,255,255,.12),
 0 6px 15px rgba(0,0,0,.16);
 }
-
 .category-group-row[draggable="true"] {
 cursor: grab;
 user-select: none;
@@ -1940,8 +1939,6 @@ letter-spacing: -2px;
 opacity: .82;
 }
 .category-group-row[draggable="false"] .category-drag-handle { display: none; }
-
-
 .category-group-row {
 cursor: pointer;
 }
@@ -2075,16 +2072,17 @@ display: grid;
 grid-template-columns: 1fr 1fr;
 }
 .category-group-row::after {
-content: "↗";
+content: "¨J";
 padding-inline: 6px;
 }
 }
-
 .task-subcategory-badge {
 color: var(--muted);
 background: var(--surface-soft);
 border-color: var(--border);
 }
+.wizard-summary-item.is-issue .wizard-summary-icon { background: color-mix(in srgb, var(--warning) 16%, var(--surface)); color: var(--warning); }
+.wizard-summary-item.is-success .wizard-summary-icon { background: color-mix(in srgb, var(--success) 16%, var(--surface)); color: var(--success); }
 </style>
 </head>
 <body>
@@ -2194,7 +2192,7 @@ border-color: var(--border);
 <p id="alarm-message" class="muted small"></p>
 <div class="modal-actions">
 <button class="btn btn-success" type="button" id="alarm-complete">✓ Completa</button>
-<button class="btn btn-soft" type="button" id="alarm-snooze">🔔 Ricorda tra 10 min</button>
+<button class="btn btn-soft" type="button" id="alarm-snooze">�� Ricorda tra 10 min</button>
 <button class="btn btn-primary" type="button" id="alarm-open-task">Apri task</button>
 <button class="btn btn-ghost" type="button" id="alarm-close">Chiudi</button>
 </div>
@@ -2212,7 +2210,7 @@ border-color: var(--border);
 <p class="section-title">Aree principali</p>
 <div class="area-filter-grid" id="area-filter-buttons">
 <button class="area-filter-btn" type="button" data-area-filter="work" aria-pressed="false">
-<span class="area-icon" aria-hidden="true">💼</span><span class="area-name">Lavoro</span><span class="area-count" id="count-work-area">0</span>
+<span class="area-icon" aria-hidden="true">��</span><span class="area-name">Lavoro</span><span class="area-count" id="count-work-area">0</span>
 </button>
 <button class="area-filter-btn" type="button" data-area-filter="personal" aria-pressed="false">
 <span class="area-icon" aria-hidden="true">⌂</span><span class="area-name">Personale</span><span class="area-count" id="count-personal-area">0</span>
@@ -2231,14 +2229,14 @@ border-color: var(--border);
 <section class="filter-card stack nav-section nav-section-views" aria-label="Viste rapide" style="margin-top: 12px;">
 <p class="section-title">Viste rapide</p>
 <div id="view-buttons" class="stack">
-<button class="view-btn active" type="button" data-view="day"><span>📅 Giorno selezionato</span><span class="view-count" id="count-day">0</span></button>
-<button class="view-btn" type="button" data-view="today"><span>🔥 Oggi</span><span class="view-count" id="count-today-view">0</span></button>
+<button class="view-btn active" type="button" data-view="day"><span>�� Giorno selezionato</span><span class="view-count" id="count-day">0</span></button>
+<button class="view-btn" type="button" data-view="today"><span>�� Oggi</span><span class="view-count" id="count-today-view">0</span></button>
 <button class="view-btn" type="button" data-view="tomorrow"><span>➡️ Domani</span><span class="view-count" id="count-tomorrow">0</span></button>
-<button class="view-btn" type="button" data-view="week"><span>🗓️ Prossimi 7 giorni</span><span class="view-count" id="count-week">0</span></button>
+<button class="view-btn" type="button" data-view="week"><span>��️ Prossimi 7 giorni</span><span class="view-count" id="count-week">0</span></button>
 <button class="view-btn" type="button" data-view="overdue"><span>⚠️ Scaduti</span><span class="view-count" id="count-overdue">0</span></button>
-<button class="view-btn" type="button" data-view="high"><span>🔴 Priorità alta</span><span class="view-count" id="count-high">0</span></button>
+<button class="view-btn" type="button" data-view="high"><span>�� Priorità alta</span><span class="view-count" id="count-high">0</span></button>
 <button class="view-btn" type="button" data-view="waiting"><span>⏳ In attesa</span><span class="view-count" id="count-waiting">0</span></button>
-<button class="view-btn" type="button" data-view="recurring"><span>🔁 Ricorrenti</span><span class="view-count" id="count-recurring">0</span></button>
+<button class="view-btn" type="button" data-view="recurring"><span>�� Ricorrenti</span><span class="view-count" id="count-recurring">0</span></button>
 <div class="recurring-category-filter" id="recurring-category-row" hidden>
 <label class="field-label" for="recurring-category-filter">Categoria ricorrenti</label>
 <select class="select" id="recurring-category-filter"></select>
@@ -2247,15 +2245,15 @@ border-color: var(--border);
 <summary>Altre viste</summary>
 <div class="details-body stack">
 <button class="view-btn" type="button" data-view="completed"><span>✅ Task di oggi completati</span><span class="view-count" id="count-completed">0</span></button>
-<button class="view-btn" type="button" data-view="no-time"><span>🕒 Senza orario</span><span class="view-count" id="count-no-time">0</span></button>
-<button class="view-btn" type="button" data-view="archive"><span>🗂️ Archivio</span><span class="view-count" id="count-archive">0</span></button>
-<button class="view-btn" type="button" data-view="trash"><span>🗑️ Cestino</span><span class="view-count" id="count-trash">0</span></button>
+<button class="view-btn" type="button" data-view="no-time"><span>�� Senza orario</span><span class="view-count" id="count-no-time">0</span></button>
+<button class="view-btn" type="button" data-view="archive"><span>��️ Archivio</span><span class="view-count" id="count-archive">0</span></button>
+<button class="view-btn" type="button" data-view="trash"><span>��️ Cestino</span><span class="view-count" id="count-trash">0</span></button>
 </div>
 </details>
 </div>
 </section>
 <details class="clean-details nav-section nav-section-search" id="search-details" style="margin-top: 12px;">
-<summary>🔎 Ricerca e filtri</summary>
+<summary>�� Ricerca e filtri</summary>
 <div class="details-body stack">
 <div>
 <label class="sr-only" for="search-input">Cerca task</label>
@@ -2295,7 +2293,7 @@ border-color: var(--border);
 </div>
 </details>
 <details class="clean-details nav-section nav-section-legend" style="margin-top: 12px;">
-<summary>🎨 Legenda</summary>
+<summary>�� Legenda</summary>
 <div class="details-body">
 <div class="legend-list" aria-label="Legenda stati">
 <div class="legend-item"><span class="legend-dot" style="background: var(--danger); color: var(--danger);"></span><span>Scaduto</span></div>
@@ -2306,19 +2304,19 @@ border-color: var(--border);
 </div>
 </details>
 <details class="clean-details nav-section nav-section-tools" id="tools-details" style="margin-top: 12px;">
-<summary>🧰 Strumenti</summary>
+<summary>�� Strumenti</summary>
 <div class="details-body stack">
-<button class="btn btn-soft btn-block" type="button" id="toggle-theme">🌓 Cambia tema</button>
-<button class="btn btn-ghost btn-block" type="button" id="enable-notifications">🔔 Attiva notifiche mentre l’app è aperta</button>
-<button class="btn btn-ghost btn-block" type="button" id="export-json">💾 Backup JSON</button>
-<button class="btn btn-ghost btn-block" type="button" id="export-csv">📊 Esporta CSV</button>
-<button class="btn btn-ghost btn-block" type="button" id="export-current-csv">📋 Esporta vista corrente</button>
-<button class="btn btn-ghost btn-block" type="button" id="open-import">📂 Importa JSON</button>
+<button class="btn btn-soft btn-block" type="button" id="toggle-theme">�� Cambia tema</button>
+<button class="btn btn-ghost btn-block" type="button" id="enable-notifications">�� Attiva notifiche mentre l’app è aperta</button>
+<button class="btn btn-ghost btn-block" type="button" id="export-json">�� Backup JSON</button>
+<button class="btn btn-ghost btn-block" type="button" id="export-csv">�� Esporta CSV</button>
+<button class="btn btn-ghost btn-block" type="button" id="export-current-csv">�� Esporta vista corrente</button>
+<button class="btn btn-ghost btn-block" type="button" id="open-import">�� Importa JSON</button>
 <input id="import-file" type="file" accept=".json,application/json" hidden />
 </div>
 </details>
 <details class="clean-details nav-section nav-section-categories" style="margin-top: 12px;">
-<summary>🏷️ Categorie</summary>
+<summary>��️ Categorie</summary>
 <div class="details-body stack">
 <div class="field-grid-2">
 <input class="field" id="new-category-name" maxlength="60" placeholder="Nuova categoria" />
@@ -2328,7 +2326,7 @@ border-color: var(--border);
 </div>
 </details>
 <details class="clean-details nav-section nav-section-maintenance" style="margin-top: 12px;">
-<summary>🧹 Manutenzione dati</summary>
+<summary>�� Manutenzione dati</summary>
 <div class="details-body stack">
 <div class="archive-summary">
 <div class="stat-box"><span>Archivio</span><strong id="archive-total">0</strong></div>
@@ -2349,7 +2347,7 @@ border-color: var(--border);
 </div>
 <div class="header-side">
 <div class="header-actions">
-<button class="btn btn-primary" type="button" id="open-editor">＋ Nuovo task</button>
+<button class="btn btn-primary" type="button" id="open-editor">£« Nuovo task</button>
 <button class="btn btn-ghost" type="button" id="focus-search">Cerca</button>
 </div>
 <div class="counter-card" id="counter-card" aria-live="polite">
@@ -2457,7 +2455,7 @@ border-color: var(--border);
 <div>
 <label class="field-label" for="task-area">Area</label>
 <select class="select" id="task-area">
-<option value="work">💼 Lavoro</option>
+<option value="work">�� Lavoro</option>
 <option value="personal">⌂ Personale</option>
 </select>
 <p class="field-hint">Scegli se appartiene a Lavoro o Personale.</p>
@@ -2529,7 +2527,7 @@ border-color: var(--border);
 <div class="details-body stack">
 <div>
 <label class="field-label" for="task-link">Link</label>
-<input class="field" id="task-link" type="url" placeholder="https://esempio.it" />
+<input class="field" id="task-link" type="text" inputmode="url" placeholder="https://esempio.it" />
 </div>
 <div>
 <label class="field-label" for="task-subtasks">Sottotask, uno per riga</label>
@@ -2603,7 +2601,7 @@ const WAITING_CATEGORY = "Attesa"; // usata solo per migrare vecchi dati: non vi
 const WAITING_LABEL = "In attesa";
 const DEFAULT_TASK_CATEGORY = "Lavoro";
 const TASK_AREAS = {
-work: { label: "Lavoro", icon: "💼", color: "#2563eb" },
+work: { label: "Lavoro", icon: "��", color: "#2563eb" },
 personal: { label: "Personale", icon: "⌂", color: "#f97316" }
 };
 const AREA_VALUES = Object.keys(TASK_AREAS);
@@ -2659,6 +2657,7 @@ storageRevision: 0,
 savedAt: ""
 };
 let db = null;
+let persistedRevision = 0;
 let state = clone(DEFAULT_STATE);
 let currentMonth = new Date();
 let undoSnapshot = null;
@@ -2696,7 +2695,7 @@ function safeObject(value) { return value && typeof value === "object" && !Array
 const BLOCKED_OBJECT_KEYS = new Set(["__proto__", "prototype", "constructor"]);
 function isSafeCategoryName(value) {
 const name = cleanText(value);
-return !!name && !BLOCKED_OBJECT_KEYS.has(name.toLowerCase());
+return !!name && !BLOCKED_OBJECT_KEYS.has(name.toLowerCase()) && !(name in Object.prototype);
 }
 function cleanText(value, fallback = "") { return typeof value === "string" ? value.trim() : fallback; }
 function normalizeArea(value, fallback = "") {
@@ -2828,8 +2827,8 @@ if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(raw)) return `https://${raw}`;
 return "";
 }
 function humanDate(dateString, options = { day: "2-digit", month: "2-digit", year: "numeric" }) {
-try { return parseDate(dateString).toLocaleDateString("it-IT", options); }
-catch { return dateString; }
+const date = parseDate(dateString);
+return Number.isNaN(date.getTime()) ? String(dateString) : date.toLocaleDateString("it-IT", options);
 }
 function repeatLabel(repeat) {
 return ({ none: "nessuna", daily: "giornaliera", weekly: "settimanale", monthly: "mensile", yearly: "annuale" })[repeat] || "nessuna";
@@ -2847,7 +2846,7 @@ return parts.map((part, index) => index % 2 ? `<mark>${escapeHtml(part)}</mark>`
 }
 function csvCell(value) {
 let text = String(value ?? "");
-if (/^[=+\-@]/.test(text)) text = `'${text}`;
+if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
 return `"${text.replaceAll('"', '""')}"`;
 }
 function downloadBlob(blob, filename) {
@@ -3303,7 +3302,6 @@ const safeValue = safeObject(value);
 return safeValue.id ? String(safeValue.id) : "";
 })
 .filter((id) => ids.has(id));
-
 const categoryNames = Object.keys(categories);
 const storedCategoryOrder = safeArray(data.categoryOrder)
 .map((name) => cleanText(name))
@@ -3368,6 +3366,7 @@ break;
 }
 }
 state = normalizeState(saved || DEFAULT_STATE);
+persistedRevision = Math.max(persistedRevision, state.storageRevision);
 if (!state.selectedDate) state.selectedDate = today();
 lastKnownToday = today();
 await migrateLegacyImages();
@@ -3375,7 +3374,8 @@ if (persist) await persistState();
 }
 async function persistState() {
 state.version = APP_VERSION;
-state.storageRevision = Math.max(0, Number(state.storageRevision) || 0) + 1;
+state.storageRevision = Math.max(Number(state.storageRevision) || 0, persistedRevision) + 1;
+persistedRevision = state.storageRevision;
 state.savedAt = new Date().toISOString();
 const snapshot = clone(state);
 let indexedDbSaved = false;
@@ -3553,7 +3553,7 @@ const nextDate = cleanDate(dateString, today());
 state.selectedDate = nextDate;
 state.view = view;
 currentMonth = parseDate(nextDate);
-if ($("task-date")) $("task-date").value = nextDate;
+if ($("task-date") && !$("task-id")?.value) $("task-date").value = nextDate;
 return nextDate;
 }
 function moveTaskOccurrenceInState(task, date, targetDate = addDays(cleanDate(date, task.date), 1)) {
@@ -3744,8 +3744,8 @@ document.documentElement.style.setProperty("--editor-width", `${state.editorWidt
 document.querySelector('meta[name="theme-color"]')?.setAttribute("content", state.theme === "dark" ? "#020617" : "#4f46e5");
 if ($("enable-notifications")) {
 $("enable-notifications").textContent = state.notificationsEnabled
-? "🔔 Notifiche attive mentre l’app è aperta"
-: "🔔 Attiva notifiche mentre l’app è aperta";
+? "�� Notifiche attive mentre l’app è aperta"
+: "�� Attiva notifiche mentre l’app è aperta";
 $("enable-notifications").classList.toggle("btn-success", state.notificationsEnabled);
 $("enable-notifications").classList.toggle("btn-ghost", !state.notificationsEnabled);
 }
@@ -3791,7 +3791,7 @@ $("go-today").hidden = systemView;
 $("next-day").hidden = systemView;
 $("move-all").hidden = systemView || state.view !== "day";
 $("recurring-category-row").hidden = state.view !== "recurring";
-$("open-count-label").textContent = state.view === "archive" ? "Archiviati" : state.view === "trash" ? "Nel cestino" : "Aperti";
+$("open-count-label").textContent = state.view === "archive" ? "Archiviati" : state.view === "trash" ? "Nel cestino" : state.view === "completed" ? "Completati" : "Aperti";
 $("daily-summary").hidden = systemView;
 if ($("more-views-details") && ["completed", "no-time", "archive", "trash"].includes(state.view)) $("more-views-details").open = true;
 document.querySelector(".workspace")?.classList.toggle("is-system-view", systemView);
@@ -3836,7 +3836,6 @@ if (priority !== "all") chips.push({ key: "priority", label: `Priorità: ${prior
 if (content !== "all") chips.push({ key: "content", label: content === "has-link" ? "Con link" : "Con sottotask" });
 container.innerHTML = chips.map((chip) => `<button class="filter-chip" type="button" data-clear-filter="${chip.key}" aria-label="Rimuovi filtro ${escapeHtml(chip.label)}">${escapeHtml(chip.label)} ×</button>`).join("");
 }
-
 function orderedCategoryNames() {
 const names = Object.keys(state.categories).filter((category) => category !== WAITING_CATEGORY);
 const stored = safeArray(state.categoryOrder).filter((category) => names.includes(category));
@@ -3844,12 +3843,10 @@ const missing = names.filter((category) => !stored.includes(category));
 state.categoryOrder = [...stored, ...missing];
 return [...state.categoryOrder];
 }
-
 function categoryOrderIndex(category) {
 const index = orderedCategoryNames().indexOf(category);
 return index < 0 ? Number.MAX_SAFE_INTEGER : index;
 }
-
 function moveCategoryInState(sourceCategory, targetCategory) {
 if (!sourceCategory || !targetCategory || sourceCategory === targetCategory) return false;
 const order = orderedCategoryNames();
@@ -3860,7 +3857,6 @@ order.splice(to, 0, order.splice(from, 1)[0]);
 state.categoryOrder = order;
 return true;
 }
-
 function renderCategories() {
 const manager = $("category-manager");
 const renameDrafts = manager ? Object.fromEntries([...manager.querySelectorAll("[data-category-rename-input]")].map((input) => [input.dataset.categoryRenameInput, input.value])) : {};
@@ -3982,9 +3978,7 @@ rows.map(({ task }) => cleanText(task.cat)).filter(Boolean)
 )].sort((a, b) => state.sort === "category"
 ? a.localeCompare(b, "it")
 : categoryOrderIndex(a) - categoryOrderIndex(b));
-
 const categoryDragEnabled = state.sort === "manual" && !["archive", "trash", "waiting"].includes(state.view);
-
 return categories.map((category) => {
 const group = rows.filter(({ task }) => task.cat === category);
 if (!group.length) return "";
@@ -4002,8 +3996,6 @@ return `
 ${group.map(taskCard).join("")}`;
 }).join("");
 }
-
-
 function categoryPendingOccurrences(category, area = "") {
 const now = today();
 const seen = new Set();
@@ -4029,7 +4021,6 @@ return true;
 });
 return sortOccurrences(rows);
 }
-
 function categoryContentItem({ task, date }) {
 const waiting = isWaitingTask(task);
 const editDate = waiting ? taskCompletionDate(task, today()) : date;
@@ -4045,18 +4036,17 @@ return `
 <div class="category-content-meta">
 <span class="area-pill ${taskArea(task) === "personal" ? "is-personal" : ""}">${areaIcon(taskArea(task))} ${escapeHtml(areaLabel(taskArea(task)))}</span>
 ${task.sub ? `<span class="badge task-subcategory-badge">${escapeHtml(task.sub)}</span>` : ""}
-<span class="badge ${priorityClass}">${task.priority === "high" ? "🔴" : task.priority === "med" ? "🟡" : "🟢"} ${priorityLabel(task.priority)}</span>
+<span class="badge ${priorityClass}">${task.priority === "high" ? "��" : task.priority === "med" ? "��" : "��"} ${priorityLabel(task.priority)}</span>
 ${waiting ? `<span class="badge badge-warning">⏳ ${WAITING_LABEL}</span>` : ""}
-${isRecurring(task) ? `<span class="badge">🔁 ${repeatLabel(task.repeat)}</span>` : ""}
+${isRecurring(task) ? `<span class="badge">�� ${repeatLabel(task.repeat)}</span>` : ""}
 </div>
 </div>
 <div class="category-content-actions">
 <button class="btn btn-soft" type="button" data-category-edit-task="${escapeHtml(task.id)}" data-category-task-date="${escapeHtml(editDate)}" aria-label="Modifica ${escapeHtml(task.text)}">✎ Modifica</button>
-<button class="btn btn-danger" type="button" data-category-delete-task="${escapeHtml(task.id)}" data-category-task-date="${escapeHtml(editDate)}" aria-label="Elimina ${escapeHtml(task.text)}">🗑 Elimina</button>
+<button class="btn btn-danger" type="button" data-category-delete-task="${escapeHtml(task.id)}" data-category-task-date="${escapeHtml(editDate)}" aria-label="Elimina ${escapeHtml(task.text)}">�� Elimina</button>
 </div>
 </div>`;
 }
-
 function categoryRowsFromSnapshot(serializedRows, category, area = "") {
 const safeCategory = cleanText(category);
 const normalizedArea = AREA_VALUES.includes(area) ? area : "";
@@ -4077,7 +4067,6 @@ console.warn("Impossibile ricostruire il gruppo categoria: uso il fallback.", er
 return categoryPendingOccurrences(safeCategory, normalizedArea);
 }
 }
-
 function openCategoryContent(category, area = "", serializedRows = "") {
 const safeCategory = cleanText(category);
 if (!safeCategory || !state.categories[safeCategory]) return;
@@ -4097,7 +4086,6 @@ $("category-content-list").innerHTML = rows.length
 : `<div class="category-content-empty"><strong>Nessun task</strong><br>Questa sezione non contiene più attività.</div>`;
 openModal("modal-category-content");
 }
-
 function taskRowsWaiting(rows) {
 if (!rows.length) return "";
 return `<div class="section-row section-waiting"><span>⏳ ${WAITING_LABEL}</span><span>${rows.length}</span></div>${rows.map(taskCard).join("")}`;
@@ -4149,14 +4137,14 @@ const renderedOpenKeys = new Set();
 const completionDate = isWaitingTask(task) ? taskCompletionDate(task, today()) : date;
 if (!completedOn(task, completionDate)) renderedOpenKeys.add(`${task.id}@${completionDate}`);
 });
-$("open-count").textContent = (state.view === "archive" || state.view === "trash")
+$("open-count").textContent = (["archive", "trash", "completed"].includes(state.view))
 ? list.length
 : renderedOpenKeys.size;
 let html = "";
 if (list.length) html += state.view === "waiting" ? taskRowsWaiting(list) : taskRowsForSort(list);
 if (waitingPersistent.length) html += taskRowsWaiting(waitingPersistent);
 if (permanent.length) {
-html += `<div class="section-row"><span>📌 In evidenza</span><span>${permanent.length}</span></div>`;
+html += `<div class="section-row"><span>�� In evidenza</span><span>${permanent.length}</span></div>`;
 html += taskRowsForSort(permanent);
 }
 $("task-list").innerHTML = html || `<div class="empty-state"><strong>Nessun task da mostrare</strong><br>Prova a cambiare vista, categoria o ricerca.</div>`;
@@ -4169,7 +4157,7 @@ const done = completedOn(task, completionDate);
 const overdue = task.status === "active" && date < today() && !done && !waiting;
 const subtasksDone = safeArray(task.subtaskDone?.[completionDate]);
 const priorityBadge = task.priority === "high" ? "badge-danger" : task.priority === "med" ? "badge-primary" : "badge-success";
-const repeatText = isRecurring(task) ? `<span class="badge">🔁 ${repeatLabel(task.repeat)}</span>` : "";
+const repeatText = isRecurring(task) ? `<span class="badge">�� ${repeatLabel(task.repeat)}</span>` : "";
 const durationText = task.durationMinutes ? `<span class="badge">⏱ ${task.durationMinutes} min</span>` : "";
 const followUpOverdue = waitingFollowUpOverdue(task);
 const followUpText = waiting && task.followUpDate
@@ -4187,8 +4175,8 @@ const activeTitle = task.status === "active"
 ? `<button type="button" data-action="edit" aria-label="Modifica ${escapeHtml(task.text)}">${highlight(task.text)}</button>`
 : highlight(task.text);
 const statusBadge = task.status === "archived"
-? `<span class="badge">🗂 Archiviato</span>`
-: task.status === "trash" ? `<span class="badge badge-danger">🗑 Nel cestino</span>` : "";
+? `<span class="badge">�� Archiviato</span>`
+: task.status === "trash" ? `<span class="badge badge-danger">�� Nel cestino</span>` : "";
 const draggable = task.status === "active" && state.sort === "manual";
 const activeActions = `
 <button class="btn ${done ? "btn-ghost" : "btn-success"} btn-icon" type="button" data-action="toggle" aria-label="${done ? "Riapri" : "Completa"} ${escapeHtml(task.text)}">${done ? "↩" : "✓"}</button>
@@ -4198,12 +4186,12 @@ ${waiting ? "" : `<button class="btn btn-ghost btn-icon" type="button" data-acti
 <summary aria-label="Altre azioni per ${escapeHtml(task.text)}">Altro</summary>
 <div class="task-more-menu">
 <button class="btn ${waiting ? "btn-soft" : "btn-ghost"}" type="button" data-action="waiting">${waiting ? "▶ Riattiva" : "⏳ Metti in attesa"}</button>
-${waiting ? "" : `<button class="btn btn-ghost" type="button" data-action="move-date">📅 Scegli data…</button>`}
-${task.time ? `<button class="btn btn-ghost" type="button" data-action="snooze">🔔 Ricorda tra 10 min</button>` : ""}
+${waiting ? "" : `<button class="btn btn-ghost" type="button" data-action="move-date">�� Scegli data…</button>`}
+${task.time ? `<button class="btn btn-ghost" type="button" data-action="snooze">�� Ricorda tra 10 min</button>` : ""}
 <button class="btn btn-ghost" type="button" data-action="duplicate">⧉ Duplica task</button>
-${waiting ? "" : `<button class="btn btn-ghost" type="button" data-action="permanent">${state.permanentIds.includes(task.id) ? "📍 Rimuovi da In evidenza" : "📌 Metti in evidenza"}</button>`}
-<button class="btn btn-ghost" type="button" data-action="archive">🗂 Archivia</button>
-<button class="btn btn-danger" type="button" data-action="delete">🗑 Elimina</button>
+${waiting ? "" : `<button class="btn btn-ghost" type="button" data-action="permanent">${state.permanentIds.includes(task.id) ? "�� Rimuovi da In evidenza" : "�� Metti in evidenza"}</button>`}
+<button class="btn btn-ghost" type="button" data-action="archive">�� Archivia</button>
+<button class="btn btn-danger" type="button" data-action="delete">�� Elimina</button>
 </div>
 </details>`;
 const storedActions = `
@@ -4220,15 +4208,15 @@ ${draggable ? `<span class="drag-handle" aria-hidden="true">⋮⋮</span>` : ""}
 <h3 class="task-title">${activeTitle}</h3>
 <div class="task-meta">
 <span class="area-pill ${taskArea(task) === "personal" ? "is-personal" : ""}">${areaIcon(taskArea(task))} ${areaLabel(taskArea(task))}</span>
-${waiting ? `<span class="waiting-category-note" style="--cat-bg:${escapeHtml(categoryColor(task.cat))};--cat-text:${escapeHtml(textColorForBackground(categoryColor(task.cat)))};">🏷 ${escapeHtml(task.cat)}</span>` : ""}
+${waiting ? `<span class="waiting-category-note" style="--cat-bg:${escapeHtml(categoryColor(task.cat))};--cat-text:${escapeHtml(textColorForBackground(categoryColor(task.cat)))};">�� ${escapeHtml(task.cat)}</span>` : ""}
 ${task.sub ? `<span class="badge task-subcategory-badge">${escapeHtml(task.sub)}</span>` : ""}
-<span class="badge ${priorityBadge}">${task.priority === "high" ? "🔴" : task.priority === "med" ? "🟡" : "🟢"} ${priorityLabel(task.priority)}</span>
+<span class="badge ${priorityBadge}">${task.priority === "high" ? "��" : task.priority === "med" ? "��" : "��"} ${priorityLabel(task.priority)}</span>
 ${repeatText}
 ${durationText}
 ${waiting ? `<span class="badge badge-warning">⏳ ${WAITING_LABEL}</span>` : ""}
 ${followUpText}
 ${overdue ? `<span class="badge badge-danger">Scaduto</span>` : ""}
-${state.permanentIds.includes(task.id) ? `<span class="badge">📌 In evidenza</span>` : ""}
+${state.permanentIds.includes(task.id) ? `<span class="badge">�� In evidenza</span>` : ""}
 ${statusBadge}
 </div>
 ${waiting && task.waitingReason ? `<p class="task-notes"><strong>Motivo attesa:</strong> ${highlight(task.waitingReason)}</p>` : ""}
@@ -4454,7 +4442,7 @@ return `${shared}
 <div class="wizard-panel">
 <label class="field-label" for="wizard-area-input">Sezione principale</label>
 <select class="select" id="wizard-area-input">
-<option value="work">💼 Lavoro</option>
+<option value="work">�� Lavoro</option>
 <option value="personal">⌂ Personale</option>
 </select>
 </div>
@@ -4943,10 +4931,7 @@ const task = state.entries.find((entry) => entry.id === id);
 if (!task) return;
 if (isRecurring(task) && occurrence) {
 pendingRecurringEdit = { taskId: id, occurrence, data, originalSeriesDate: task.date };
-if (data.repeat === "none") {
-await applyRecurringEdit("single");
-return;
-}
+
 const singleScope = document.querySelector('input[name="recurring-scope"][value="single"]');
 if (singleScope) singleScope.checked = true;
 openModal("modal-recurring");
@@ -4971,7 +4956,7 @@ async function applyRecurringEdit(scope) {
 if (!pendingRecurringEdit) return;
 const { taskId, occurrence, data, originalSeriesDate } = pendingRecurringEdit;
 const task = state.entries.find((entry) => entry.id === taskId);
-if (!task) return;
+if (!task) { closeModal("modal-recurring"); return; }
 const mutationMessage = scope === "single" && data.repeat === "none"
 ? "Task salvato senza ricorrenza"
 : "Ricorrenza aggiornata";
@@ -5310,7 +5295,7 @@ openModal("modal-delete");
 async function confirmDelete() {
 if (!pendingDelete) return;
 const task = state.entries.find((entry) => entry.id === pendingDelete.taskId);
-if (!task) return;
+if (!task) { pendingDelete = null; closeModal("modal-delete"); return; }
 const scope = document.querySelector('input[name="delete-scope"]:checked')?.value || pendingDelete.scope;
 const date = pendingDelete.date;
 await mutate("Task eliminato", async () => {
@@ -5339,7 +5324,7 @@ let repeat = "none";
 let waiting = false;
 let newCategoryName = "";
 let area = state.areaFilter === "all" ? inferTaskArea({ cat, text }) : state.areaFilter;
-const categoryMatch = text.match(/#([\p{L}\p{N}_.-]+)/u);
+const categoryMatch = text.match(/#([\p{L}\p{N}_-]+(?:\.[\p{L}\p{N}_-]+)*)/u);
 if (categoryMatch) {
 const wanted = categoryMatch[1];
 if (wanted.toLowerCase() === WAITING_CATEGORY.toLowerCase()) {
@@ -5659,7 +5644,6 @@ oscillator.stop(start + offset + .17);
 console.warn("Avviso sonoro non disponibile", error);
 }
 }
-
 function openAlarmPopup(task, reminderDate, completionDate = reminderDate) {
 pendingAlarm = { taskId: task.id, reminderDate, completionDate };
 $("alarm-message").textContent = `${task.text}${task.time ? ` · ore ${task.time}` : ""} · ${task.cat} · Priorità ${priorityLabel(task.priority)}`;
@@ -5693,14 +5677,12 @@ await persistState();
 await renderAll();
 await editTask(task.id, completionDate);
 }
-
 function closeAlarmPopup() {
 pendingAlarm = null;
 closeModal("modal-alarm");
 }
-
 function notifyTask(task, reminderDate, completionDate = reminderDate) {
-showToast(`🔔 ${task.text}${task.time ? ` · ${task.time}` : ""}`);
+showToast(`�� ${task.text}${task.time ? ` · ${task.time}` : ""}`);
 playAlarmSound();
 openAlarmPopup(task, reminderDate, completionDate);
 if ("Notification" in window && Notification.permission === "granted") {
@@ -6091,6 +6073,7 @@ const date = card.dataset.date;
 const occurrenceDate = card.dataset.occurrenceDate || date;
 const action = event.target.closest("[data-action]")?.dataset.action;
 if (!task || !action || action === "subtask") return;
+event.target.closest("details.task-more")?.removeAttribute("open");
 if (action === "edit") await editTask(task.id, occurrenceDate);
 if (action === "toggle") await toggleComplete(task, card.dataset.completionDate || date);
 if (action === "move-next") await moveOccurrence(task, occurrenceDate);
@@ -6112,7 +6095,6 @@ if (task) await toggleSubtask(task, card.dataset.completionDate || card.dataset.
 });
 let draggedCategory = "";
 let suppressCategoryPopupUntil = 0;
-
 $("task-list").addEventListener("dragstart", (event) => {
 const categoryHeader = event.target.closest("[data-category-group]");
 if (!categoryHeader || state.sort !== "manual") return;
@@ -6122,7 +6104,6 @@ categoryHeader.classList.add("is-category-dragging");
 event.dataTransfer.effectAllowed = "move";
 event.dataTransfer.setData("text/plain", `category:${draggedCategory}`);
 });
-
 $("task-list").addEventListener("dragover", (event) => {
 const categoryHeader = event.target.closest("[data-category-group]");
 if (!categoryHeader || !draggedCategory || state.sort !== "manual") return;
@@ -6130,7 +6111,6 @@ event.preventDefault();
 document.querySelectorAll(".category-group-row.is-category-drop-target").forEach((row) => row.classList.remove("is-category-drop-target"));
 if (categoryHeader.dataset.categoryGroup !== draggedCategory) categoryHeader.classList.add("is-category-drop-target");
 });
-
 $("task-list").addEventListener("drop", async (event) => {
 const categoryHeader = event.target.closest("[data-category-group]");
 if (!categoryHeader || !draggedCategory || state.sort !== "manual") return;
@@ -6145,14 +6125,12 @@ moveCategoryInState(sourceCategory, targetCategory);
 state.sort = "manual";
 });
 });
-
 $("task-list").addEventListener("dragend", (event) => {
 if (!event.target.closest("[data-category-group]")) return;
 suppressCategoryPopupUntil = Date.now() + 350;
 draggedCategory = "";
 document.querySelectorAll(".category-group-row").forEach((row) => row.classList.remove("is-category-dragging", "is-category-drop-target"));
 });
-
 let draggedId = "";
 $("task-list").addEventListener("dragstart", (event) => {
 if (event.target.closest("[data-category-group]")) return;
@@ -6355,7 +6333,6 @@ await hydrateImages();
 }, 160);
 };
 })();
-
 function bindCrossTabSync() {
 window.addEventListener("storage", async (event) => {
 if (event.key !== FALLBACK_STATE_KEY || !event.newValue) return;
@@ -6366,6 +6343,7 @@ const incomingFreshness = stateFreshness(incoming);
 if (incomingFreshness.revision < currentFreshness.revision) return;
 if (incomingFreshness.revision === currentFreshness.revision && incomingFreshness.savedAt <= currentFreshness.savedAt) return;
 state = normalizeState(incoming);
+persistedRevision = Math.max(persistedRevision, state.storageRevision);
 if (!state.selectedDate) state.selectedDate = today();
 currentMonth = parseDate(state.selectedDate);
 await renderAll();
